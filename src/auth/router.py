@@ -8,6 +8,7 @@ from typing import Annotated
 
 from src.auth.models import User
 from src.auth.schemas import CreateUser, TokenResponse, RefreshRequest, ReadUser
+from src.config import settings
 from src.db_depends import get_session
 from src.auth.security import bcrypt_context
 from src.auth.models import RefreshToken
@@ -88,14 +89,14 @@ async def refresh_access_token(
             detail="User not found or inactive"
         )
 
-    access_token_expires = timedelta(minutes=5)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         username=user.username,
         user_id=user.id,
         expires_delta=access_token_expires
     )
 
-    refresh_token_expires = timedelta(days=7)
+    refresh_token_expires = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
     refresh_token = create_refresh_token(
         username=user.username,
         user_id=user.id,

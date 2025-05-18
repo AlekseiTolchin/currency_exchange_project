@@ -2,22 +2,16 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 import jwt
-from jwt.exceptions import PyJWTError
 from fastapi import Depends, status, HTTPException
-from fastapi.security import OAuth2PasswordBearer, HTTPBasic, HTTPBasicCredentials
+from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert
+from sqlalchemy import select
 
 from src.db_depends import get_session
 from src.config import settings
 from src.auth.models import User
-from src.auth.schemas import CreateUser
 from src.auth.models import RefreshToken
-
-
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
-REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
