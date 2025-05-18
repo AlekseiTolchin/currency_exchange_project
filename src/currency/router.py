@@ -1,10 +1,12 @@
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
 from fastapi import APIRouter, Query, Depends, status, HTTPException
 
+from src.auth.models import User
 from src.config import settings
 from src.currency.utils import fetch_currencies, fetch_currency_rate, convert_currency
 from src.currency.schemas import CurrencyRate, CurrencyConversionResponse, CurrenciesResponse
+from src.auth.security import get_current_user
 
 
 COMMON_RESPONSES = {
@@ -29,7 +31,11 @@ def get_api_client() -> dict:
 
 
 @currencies_router.get('/', response_model=CurrenciesResponse, responses=COMMON_RESPONSES)
-async def get_currencies(api_client: dict = Depends(get_api_client))-> CurrenciesResponse:
+async def get_currencies(
+        current_user: Annotated[User, Depends(get_current_user)],
+        api_client: dict = Depends(get_api_client),
+
+)-> CurrenciesResponse:
     """Получить список доступных валют."""
 
     headers = api_client.get('headers', {})
@@ -45,9 +51,10 @@ async def get_currencies(api_client: dict = Depends(get_api_client))-> Currencie
 
 @currencies_router.get('/rates', response_model=CurrencyRate, responses=COMMON_RESPONSES)
 async def get_currency_rate(
+    current_user: Annotated[User, Depends(get_current_user)],
     source: str = Query(default='USD', description='Базовая валюта'),
     currencies: Optional[List[str]] = Query(default=None, description='Валюты, например: EUR, GBP, JPY'),
-    api_client: dict = Depends(get_api_client)
+    api_client: dict = Depends(get_api_client),
 ) -> CurrencyRate:
     """Получить курсы валют относительно базовой валюты."""
 
@@ -69,6 +76,7 @@ async def get_currency_rate(
     responses=COMMON_RESPONSES
 )
 async def get_converted_currency(
+    current_user: Annotated[User, Depends(get_current_user)],
     amount: float = Query(description='Количество'),
     from_currency: str = Query(description='Из'),
     to_currency: str = Query(description='В'),
