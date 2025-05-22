@@ -9,3 +9,5 @@ passlib==1.7.4
 PyJWT==2.10.1
 pydantic[email]
 python-multipart==0.0.20
+pytest==8.3.5
+pytest-asyncio==0.26.0

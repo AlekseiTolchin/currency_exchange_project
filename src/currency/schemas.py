@@ -1,6 +1,6 @@
 from typing import Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CurrenciesResponse(BaseModel):
@@ -14,8 +14,8 @@ class CurrencyRate(BaseModel):
     source: str
     quotes: Dict[str, float]
 
-    model_config = {
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": True,
                 "timestamp": 1747256405,
@@ -26,13 +26,15 @@ class CurrencyRate(BaseModel):
                 }
             }
         }
-    }
+    )
 
 
 class QueryModel(BaseModel):
-    from_: str = 'USD'
+    from_: str = Field(default='USD', alias='from')
     to: str
     amount: float
+
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class InfoModel(BaseModel):
@@ -46,8 +48,8 @@ class CurrencyConversionResponse(BaseModel):
     info: InfoModel
     result: float
 
-    model_config = {
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": True,
                 "query": {
@@ -62,4 +64,4 @@ class CurrencyConversionResponse(BaseModel):
                 "result": 1.79014
             }
         }
-    }
+    )

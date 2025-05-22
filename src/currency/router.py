@@ -30,11 +30,10 @@ def get_api_client() -> dict:
     }
 
 
-@currencies_router.get('/', response_model=CurrenciesResponse, responses=COMMON_RESPONSES)
+@currencies_router.get('', response_model=CurrenciesResponse, responses=COMMON_RESPONSES)
 async def get_currencies(
         current_user: Annotated[User, Depends(get_current_user)],
         api_client: dict = Depends(get_api_client),
-
 )-> CurrenciesResponse:
     """Получить список доступных валют."""
 
